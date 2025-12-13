@@ -1,0 +1,607 @@
+/* ... (Gaya dari body sampai .saat-content li tetap sama) ... */
+body {
+    margin: 0;
+    font-family: 'Inter', sans-serif;
+    color: #333;
+    line-height: 1.6;
+}
+
+.map-sect h1, h2, h3 {
+    font-weight: 700;
+    color: #004A6B;
+}
+
+.map-sect h1 {
+    font-size: 2.5rem;
+    font-weight: 900;
+}
+
+.map-sect h2 {
+    font-size: 2rem;
+}
+
+.map-sect p {
+    font-size: 1rem;
+    margin-bottom: 1rem;
+}
+
+/* Kontainer utama */
+.map-sect {
+    width: 100%;
+    max-width: 1700px;
+    margin: 2rem auto;
+    padding: 1rem;
+}
+
+/* Placeholder Gambar */
+.img-placeholder {
+    width: 100%;
+    min-height: 250px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-style: italic;
+    font-size: 1.2rem;
+    margin-top: 1rem;
+}
+
+.tall-placeholder { min-height: 400px; }
+.medium-placeholder { min-height: 100px; margin-top: 0; }
+.small-placeholder { min-height: 140px; margin-top: 0; }
+.icon-placeholder { 
+    min-height: auto;
+    width: 120px;
+    height: 60px;
+    margin-top: 0;
+    flex-shrink: 0;
+}
+
+
+#interactive-map-container {
+    background-image: url('map.png');
+    background-size: cover; 
+    background-position: center;
+    position: relative;
+    display: block; 
+    min-height: 50%;
+    overflow: hidden; 
+}
+
+.map-indicator {
+    position: absolute; 
+    z-index: 10; 
+    transition: transform 0.3s ease; 
+    filter: drop-shadow(2px 4px 6px rgba(0,0,0,0.3)); 
+}
+
+.map-indicator:hover {
+    transform: scale(1.1); 
+    cursor: pointer;
+}
+
+#indicator-mangrove {
+    width: 150px;
+    top: 40%;    
+    left: 12%;  
+}
+
+#indicator-pin {
+    width: 100px; 
+    bottom: 15%;  
+    right: 18%;   
+}
+
+@media (max-width: 768px) {
+    #interactive-map-container {
+        min-height: 350px;
+    }
+    
+    #indicator-mangrove {
+        width: 100px;
+    }
+    #indicator-pin {
+        width: 70px;
+    }
+}
+
+.map-wrapper {
+    position: relative; 
+    width: 100%;       
+    overflow: hidden;  
+    border-radius: 12px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+}
+
+.main-map {
+    width: 100%;   
+    height: auto;   
+    display: block;  
+}
+
+.map-indicator {
+    position: absolute; 
+    z-index: 10;       
+    transition: transform 0.3s ease;
+    cursor: pointer;
+}
+
+.map-indicator:hover {
+    transform: scale(1.1);
+}
+
+#pos-mangrove {
+    width: 8%;   
+    top: 48%;     
+    left: 1.5%;    
+}
+
+#pos-pin {
+    width: 5%;   
+    bottom: 85%;  
+    right: 88%;   
+}
+
+#pos-teea {
+    width: 11%;   
+    top: 31%;     
+    right: 82.5%;   
+}
+
+#pos-pasir {
+    width: 7%;    
+    bottom: 42%;  
+    left: 52%;    
+}
+
+#pos-bungsu {
+    width: 8%;    
+    top: 18.5%;     
+    left: 16%;    
+}
+
+#pos-gemilang {
+    width: 11%;    
+    bottom: 68.4%;  
+    right: 47.5%;   
+}
+
+#pos-nemo {
+    width: 11%;    
+    top: 35%;     
+    right: 35%;    
+}
+
+#pos-terumbu {
+    width: 15%;    
+    bottom: 18%;  
+    left: 50%;    
+}
+
+#pos-watersport {
+    width: 10%;    
+    top: 23%;     
+    right: 37%;    
+}
+
+#pos-header {
+    width: 37%;
+    top: 5%;
+    left: 62.5%;
+}
+
+@media (max-width: 768px) {
+    #pos-mangrove { width: 25%; }
+    #pos-pin { width: 18%; }
+}
+
+button {
+    background-color: #ffefc2;
+    color: black;
+    border: none;
+    padding: 0.8rem 1.5rem;
+    border-radius: 5px;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+button:hover { background-color: #e65c2e; }
+
+/* Peta Div */
+.peta-div {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2rem;
+    padding: 2rem;
+}
+.peta-div-left { flex: 1; min-width: 300px; }
+.peta-div-right { flex: 3; min-width: 300px; }
+
+.peta-div h1 {
+    font-size: 1.5rem;
+    margin-bottom: 100px;
+}
+
+.peta-div-left button {
+    margin-top: 50px;
+}
+
+
+/* Pulau Div */
+.pulau-div {
+    padding: 2rem;
+    text-align: center;
+}
+.pulau-div p { max-width: 800px; margin-left: auto; margin-right: auto; color: #004A6B;}
+
+.pulau-div img {
+    width: 100%;
+    height: 100%;
+    transform: translateY(-200px);
+}
+
+.pulau-div .img-placeholder {
+    position: relative;
+    z-index: -1;
+}
+
+/* Tips Div */
+.tips-div { padding: 2rem;}
+.tips-div-top {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 2rem;
+}
+.tips-text-wrapper { flex: 1.5; min-width: 300px; }
+.tips-div-top .img-placeholder { flex: 1; min-width: 300px; }
+.tips-div-top p { max-width: 700px; }
+.tips-div-bottom {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin-top: 2rem;
+}
+
+.tips-div img {
+    width: 100%;
+    height: 100%;
+}
+
+.tip-item {
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+.tip-item h3 { margin-top: 0; }
+
+
+/* Saat Div */
+.saat-div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    margin: 2rem 0;
+    padding-bottom: 2rem;
+    background-color: #ffefd0;
+}
+.saat-div-left {
+    flex: 1;
+    min-width: 300px;
+    color: white;
+    padding: 2rem;
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+.saat-div-left h1 { color: rgb(155, 132, 0); margin: 0;}
+.saat-div-right { flex: 1.5; min-width: 300px; align-content: center;}
+.saat-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+}
+
+.saat-div img {
+    width: 100%;
+    height: 100%;
+}
+
+.saat-div-left img {
+    height: 200px;
+    width: 350px;
+}
+
+
+.saat-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
+    padding: 1.5rem;
+    border-radius: 8px;
+}
+
+.saat-icon-placeholder {
+    flex-shrink: 0;
+    width: 60px;
+    height: 60px;
+    background-color: rgba(0, 0, 0, 0.05);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+    color: #555;
+}
+.saat-content { flex-grow: 1; }
+.saat-content h3 { margin-top: 0; margin-bottom: 0.5rem; color: #333; }
+.saat-content ul {
+    list-style-type: '• ';
+    padding-left: 1.2rem;
+    margin: 0;
+    font-size: 0.9rem;
+    color: #555;
+}
+.saat-content li { margin-bottom: 0.25rem; padding-left: 0.25rem; }
+
+/* Waktu Div */
+.waktu-div {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+    padding: 2rem 0;
+    align-items: stretch;
+}
+
+/* Kolom Kiri (Biru) */
+.waktu-div-left {
+    flex: 1.5;
+    min-width: 300px;
+    background-color: #4fb9ff;
+    padding: 2rem;
+    padding-bottom: 0;
+    border-radius: 12px;
+    border: 1px solid #bce6fd;
+    overflow: hidden;
+}
+
+.waktu-header-flex {
+    display: flex;
+    align-items: center; /* Sejajar vertikal */
+    gap: 1.5rem; /* Jarak antara teks dan gambar */
+    margin-bottom: 1.5rem; /* Jarak ke grid di bawahnya */
+}
+
+.waktu-header-flex h2 {
+    flex: 1; /* Biarkan teks mengambil lebih banyak ruang */
+    margin-top: 0;
+    color: #ffffff;
+    font-size: 1.5rem;
+}
+
+.waktu-header-flex .img-placeholder {
+    flex: 1; /* Biarkan gambar mengambil lebih sedikit ruang */
+    min-height: auto;
+    margin-top: 0;
+    background-color: transparent; /* Hapus background placeholder */
+}
+
+.waktu-header-flex img {
+    width: 100%;
+    height: 100%;
+    
+}
+
+.waktu-info-box {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+    background-color: #005a85;
+    color: white;
+    padding: 1rem;
+    border-radius: 8px;
+    margin: 1.5rem 0;
+}
+
+.waktu-info-box .icon-placeholder {
+    width: 40px;
+    height: 40px;
+}
+
+.waktu-info-box p {
+    margin: 0;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+.waktu-alasan-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1rem;
+    background-color: #e0f2fe;
+    margin-left: -2rem;
+    margin-right: -2rem;
+
+    padding-left: 2rem;
+    padding-right: 2rem;
+    padding-top: 1.5rem;
+    padding-bottom: 2rem;
+
+    border-radius: 0 0 12px 12px;
+}
+
+.waktu-alasan-item {
+    text-align: center;
+}
+
+.waktu-alasan-item img {
+    width: 100%;
+    height: 100%;
+}
+
+.waktu-alasan-item p {
+    font-size: 0.9rem;
+    color: #333;
+    margin-top: 0.75rem;
+    font-weight: 500;
+}
+
+/* Kolom Kanan (Kuning) */
+.waktu-div-right {
+    flex: 1;
+    min-width: 300px;
+    background-color: #fef9e7;
+    padding: 2rem;
+    padding-bottom: 0;
+    border-radius: 12px;
+    border: 1px solid #fceec0;
+}
+
+.estimasi-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 1rem;
+}
+
+.estimasi-header h2 {
+    margin: 0;
+    color: #d9534f;
+    font-size: 1.5rem;
+}
+
+.estimasi-header img {
+    width: 100%;
+    height: 100%;
+}
+
+.estimasi-wrapper {
+    position: relative;
+    margin-top: 1rem;
+    margin-bottom: 2rem;
+    size: 1rem;
+}
+
+.estimasi-item-content {
+    background: white;
+    border: 2px dashed #fcdb99;
+    border-radius: 8px;
+    padding: 1.5rem;
+}
+
+.estimasi-item-content p {
+    margin: 0;
+    color: #555;
+    line-height: 1.7;
+}
+
+.estimasi-item-content strong {
+    color: #333;
+    display: block;
+    margin-bottom: 0.25rem;
+}
+
+.jarak-badge {
+    position: absolute;
+    bottom: -18px;
+    right: 20px;
+    background-color: #d9534f;
+    color: white;
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 700;
+    border: 3px solid #fef9e7;
+}
+
+#jarak-badge-2 {
+    background-color: #c94a46;
+}
+
+/* Responsif */
+@media (max-width: 768px) {
+    h1 { font-size: 2rem; }
+    h2 { font-size: 1.75rem; }
+
+    .peta-div, .saat-div, .waktu-div {
+        flex-direction: column;
+    }
+    
+    .map-sect {
+        width: 95%;
+        margin: 1rem auto;
+        padding: 0.5rem;
+    }
+
+    .peta-div, .pulau-div, .tips-div, .saat-div, .waktu-div {
+        padding: 1.5rem;
+    }
+    
+    .saat-div { padding-bottom: 1.5rem; }
+    .tips-div-top { flex-direction: column; }
+    .saat-grid { grid-template-columns: 1fr; }
+
+    /* Penyesuaian Waktu Div di mobile */
+    .waktu-div { padding: 1.5rem 0 0 0; }
+    .waktu-div-left, .waktu-div-right { padding: 1.5rem; }
+
+    .waktu-alasan-grid {
+
+        grid-template-columns: 1fr; 
+        gap: 1.5rem;
+    }
+    .waktu-alasan-item .small-placeholder { min-height: 150px; }
+    .estimasi-header h2 { font-size: 1.5rem; }
+}
+
+/* --- STYLE TAMBAHAN UNTUK INTERAKTIF MAP --- */
+
+/* 1. Pengaturan Pop Up Image */
+.info-popup {
+    position: absolute;
+    z-index: 20; 
+    top: 25%;    
+    left: 66%;   
+    
+    width: 30%;  
+    height: auto;
+    
+    /* Efek muncul */
+    animation: fadeIn 0.5s ease-in-out;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+    border-radius: 8px;
+}
+
+/* Animasi Fade In */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* 2. Pengaturan Pin 'Kamu Disini' saat bergerak */
+#pos-pin {
+    z-index: 100 !important; /* Pastikan selalu paling atas */
+    transition: all 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275); /* Efek gerak membal */
+    pointer-events: none; /* Agar pin tidak menghalangi klik pada indikator di bawahnya */
+}
+
+/* 3. Cursor pointer untuk item yang bisa diklik */
+.clickable {
+    cursor: pointer;
+}
+
+.clickable:hover {
+    transform: scale(1.15); /* Efek hover sedikit membesar */
+}
+
+/* Responsif untuk Mobile */
+@media (max-width: 768px) {
+    .info-popup {
+        width: 60%; /* Di HP pop up lebih lebar */
+        left: 50%;
+        transform: translateX(-50%); /* Tengah layar */
+        top: 15%;
+    }
+}
