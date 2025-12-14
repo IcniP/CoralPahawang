@@ -8,41 +8,49 @@ import { GLTFLoader } from "https://cdn.skypack.dev/three@0.129.0/examples/jsm/l
 // =============================================
 // 1. GLOBAL VARIABLES & CONFIG
 // =============================================
-
-// --- Three.js Core ---
 const scene = new THREE.Scene();
 scene.background = new THREE.Color(0x0b1517);
-const camera = new THREE.PerspectiveCamera(
-  75,
-  window.innerWidth / window.innerHeight,
-  0.1,
-  1000
-);
+const camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
 const renderer = new THREE.WebGLRenderer({ alpha: true });
 const loader = new GLTFLoader();
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+
 let controls;
 let object;
 let currentModel = null;
 let interactionPlane;
-const raycaster = new THREE.Raycaster();
-const mouse = new THREE.Vector2();
+let container3D;
 
-// --- State & Data ---
-const modelStates = ["normal", "bleached", "dead"]; 
+// State & Data
+const modelStates = ["normal", "bleached", "dead"];
 let polipScene, polipCamera, polipRenderer, polipLoader, polipObject;
-let currentModelStateIndex = 0; 
+let currentModelStateIndex = 0;
 let isDragging = false;
 let isModelLoading = false;
 let objToRender = null;
-let currentCoralIndex = 0; 
-let currentCoralTypeIndex = 0; 
+let currentCoralIndex = 0;
+let currentCoralTypeIndex = 0;
 let isInsideCoralArea = false;
 let isScrolling = false;
 let modelLoadTimeout = null;
-let modelChangeTimer = null; 
-let container3D;
+let modelChangeTimer = null;
 
-// --- Data Koral ---
+const stateInfoData = {
+  normal: {
+    title: "Healthy Coral",
+    desc: "Karang sehat berwarna cerah seperti cokelat, hijau, atau ungu dengan permukaan halus dan polip aktif. Hubungan simbiotik dengan alga zooxanthellae berjalan baik, menandakan ekosistem laut yang stabil dan produktif."
+  },
+  bleached: {
+    title: "Bleached Coral",
+    desc: "Karang memutih tampak pucat atau putih karena kehilangan alga zooxanthellae. Jaringannya masih ada, tetapi polip terlihat lemah dan kurang aktif akibat stres lingkungan seperti suhu tinggi."
+  },
+  dead: {
+    title: "Dead Coral",
+    desc: "Karang mati berwarna abu-abu atau ditumbuhi alga, dengan struktur keras dari kalsium karbonat yang tersisa. Tidak ada jaringan hidup, menandakan ekosistem terumbu karang yang rusak."
+  }
+};
+
 const coralData = [
   {
     id: "Branching",
@@ -106,10 +114,8 @@ const coralData = [
   },
 ];
 
-// --- DOM Element Selectors ---
-const coralScrollContainer = document.querySelector(
-  ".coral-type-scroll-container"
-);
+// DOM Elements
+const coralScrollContainer = document.querySelector(".coral-type-scroll-container");
 const coralTitle = document.getElementById("coralTitle");
 const coralDescription = document.getElementById("coralDescription");
 const btnExploreHome = document.getElementById("btnExploreHome");
@@ -132,13 +138,11 @@ const navContainer = document.querySelector(".nav-links-container");
 
 function initThree() {
   container3D = document.getElementById("container3D");
-  if (!container3D) return; // Hentikan jika bukan di halaman home
+  if (!container3D) return;
 
   renderer.setSize(container3D.clientWidth, container3D.clientHeight);
-
   camera.aspect = container3D.clientWidth / container3D.clientHeight;
   camera.updateProjectionMatrix();
-
   container3D.appendChild(renderer.domElement);
 
   const topLight = new THREE.DirectionalLight(0xffffff, 1);
@@ -154,7 +158,7 @@ function initThree() {
   controls.enableZoom = false;
   controls.enablePan = false;
   controls.enableRotate = true;
-  controls.enabled = false; 
+  controls.enabled = false;
 
   controls.addEventListener("start", function () {
     isDragging = true;
@@ -166,24 +170,21 @@ function initThree() {
 
   controls.addEventListener("end", function () {
     isDragging = false;
-    
     if (document.body.dataset.section === "home") {
-      if (modelChangeTimer) {
-        clearTimeout(modelChangeTimer);
-      }
+      if (modelChangeTimer) clearTimeout(modelChangeTimer);
       
       modelChangeTimer = setTimeout(() => {
         if (document.body.dataset.section !== "home" || isModelLoading || isDragging) {
           modelChangeTimer = null;
           return;
         }
-
         currentModelStateIndex = (currentModelStateIndex + 1) % modelStates.length;
         const newState = modelStates[currentModelStateIndex];
         const activeItem = coralData[currentCoralIndex];
         
         if (activeItem) {
           loadNewModel(activeItem.model, newState);
+          updateStateText(newState);
         }
         modelChangeTimer = null;
       }, 3000); 
@@ -210,12 +211,9 @@ function loadNewModel(modelName, modelState = "normal") {
   }
 
   objToRender = modelName;
-  let modelPath = "";
-  if (modelState === "normal") {
-    modelPath = `Website/3d/${objToRender}/Coral.gltf`;
-  } else {
-    modelPath = `Website/3d/${modelState}/${objToRender}/Coral.gltf`;
-  }
+  const modelPath = modelState === "normal" 
+    ? `Website/3d/${objToRender}/Coral.gltf` 
+    : `Website/3d/${modelState}/${objToRender}/Coral.gltf`;
 
   loader.load(
     modelPath, 
@@ -253,12 +251,7 @@ function loadNewModel(modelName, modelState = "normal") {
         coralencrust: { scale: 1.4, camZ: 1.5, camY: 0.0 },
         CoralMushroom: { scale: 2.0, camZ: 6.5, camY: 0.0 },
       };
-      const adj =
-        cameraAndScaleAdjustments[modelName] || {
-          scale: 1.5,
-          camZ: 3.5,
-          camY: 0.0,
-        };
+      const adj = cameraAndScaleAdjustments[modelName] || { scale: 1.5, camZ: 3.5, camY: 0.0 };
 
       object.scale.set(adj.scale, adj.scale, adj.scale);
 
@@ -271,14 +264,9 @@ function loadNewModel(modelName, modelState = "normal") {
       const size = box.getSize(new THREE.Vector3());
       const planeSize = Math.max(size.x, size.y) * 1.2;
       const interactionPlaneGeometry = new THREE.PlaneGeometry(planeSize, planeSize);
-      const interactionPlaneMaterial = new THREE.MeshBasicMaterial({
-        visible: false,
-        side: THREE.DoubleSide,
-      });
-      interactionPlane = new THREE.Mesh(
-        interactionPlaneGeometry,
-        interactionPlaneMaterial
-      );
+      const interactionPlaneMaterial = new THREE.MeshBasicMaterial({ visible: false, side: THREE.DoubleSide });
+      
+      interactionPlane = new THREE.Mesh(interactionPlaneGeometry, interactionPlaneMaterial);
       interactionPlane.position.copy(object.position);
       scene.add(interactionPlane);
 
@@ -287,17 +275,11 @@ function loadNewModel(modelName, modelState = "normal") {
       controls.target.set(0, adj.camY, 0);
       controls.update();
 
-      if (controls) {
-        controls.target.copy(new THREE.Vector3(0, adj.camY, 0));
-        controls.object.position.copy(camera.position);
-        controls.update();
-      }
-
       isModelLoading = false;
     },
-    function (xhr) {},
+    undefined,
     function (error) {
-      console.error(`An error happened during loading ${modelName} (${modelState}):`, error);
+      console.error(`Error loading ${modelName} (${modelState}):`, error);
       isModelLoading = false;
     }
   );
@@ -308,13 +290,7 @@ function initPolipScene() {
   if (!container) return;
 
   polipScene = new THREE.Scene();
-
-  polipCamera = new THREE.PerspectiveCamera(
-    50,
-    container.clientWidth / container.clientHeight,
-    0.1,
-    100
-  );
+  polipCamera = new THREE.PerspectiveCamera(50, container.clientWidth / container.clientHeight, 0.1, 100);
 
   polipRenderer = new THREE.WebGLRenderer({ alpha: true });
   polipRenderer.setSize(container.clientWidth, container.clientHeight);
@@ -333,15 +309,11 @@ function initPolipScene() {
 
 function loadPolipModel() {
   if (!polipLoader) return;
-
   polipLoader.load(
     `Website/3d/Filler/polip/Polip.gltf`,
     function (gltf) {
       polipObject = gltf.scene;
       const polipScale = 3.5;
-      const polipCamZ = 5;
-      const polipCamY = 0;
-
       polipObject.scale.set(polipScale, polipScale, polipScale);
 
       const box = new THREE.Box3().setFromObject(polipObject);
@@ -349,14 +321,11 @@ function loadPolipModel() {
       polipObject.position.sub(center);
 
       polipScene.add(polipObject);
-
-      polipCamera.position.set(0, polipCamY, polipCamZ);
-      polipCamera.lookAt(0, polipCamY, 0);
+      polipCamera.position.set(0, 0, 5);
+      polipCamera.lookAt(0, 0, 0);
     },
     undefined,
-    function (error) {
-      console.error("An error happened loading the polip:", error);
-    }
+    function (error) { console.error("Error loading polip:", error); }
   );
 }
 
@@ -398,16 +367,13 @@ function renderCoralItems(setActive = false) {
       const activeModelName = activeItem.model;
       const activeState = modelStates[currentModelStateIndex]; 
       loadNewModel(activeModelName, activeState); 
+      updateStateText(activeState);
     }, 400);
   }
 }
 
-function disablePageScroll() {
-  document.body.style.overflow = "hidden";
-}
-function enablePageScroll() {
-  document.body.style.overflow = "";
-}
+function disablePageScroll() { document.body.style.overflow = "hidden"; }
+function enablePageScroll() { document.body.style.overflow = ""; }
 
 function isCursorInsideCoral(x, y) {
   if (!coralScrollContainer) return false;
@@ -431,17 +397,16 @@ window.addEventListener("mousemove", (e) => {
 });
 
 if(coralScrollContainer) {
-    coralScrollContainer.addEventListener("touchstart", (e) => {
+    coralScrollContainer.addEventListener("touchstart", () => {
         if (document.body.dataset.section === "home") disablePageScroll();
     }, { passive: false });
 
-    coralScrollContainer.addEventListener("touchend", (e) => {
+    coralScrollContainer.addEventListener("touchend", () => {
         if (document.body.dataset.section === "home") enablePageScroll();
     }, { passive: false });
 }
 
-// --- Logika Drag-to-Scroll & Snap (Vertikal) ---
-(function enableVerticalScrollWithAnimation_v2() {
+function initVerticalScrollLogic() {
   if(!coralScrollContainer) return;
 
   let isPointerDown = false;
@@ -529,7 +494,20 @@ if(coralScrollContainer) {
       const item = el && el.closest(".coral-scroll-item");
       if (item) {
         const index = parseInt(item.dataset.index);
-        if (index !== currentCoralIndex) { window.__snapCoralScrollToIndex(index); }
+        if (index !== currentCoralIndex) { 
+           // Snap logic inline
+           const targetItem = coralScrollContainer.querySelector(`.coral-scroll-item[data-index="${index}"]`);
+           if (targetItem) {
+             const target = getCenterTargetForItem(targetItem);
+             smoothScrollToVertical(target, 420);
+             setTimeout(() => {
+               if (currentCoralIndex !== index) currentModelStateIndex = 0;
+               currentCoralIndex = index;
+               currentCoralTypeIndex = index;
+               renderCoralItems(true);
+             }, 440);
+           }
+        }
       }
       return;
     }
@@ -553,27 +531,14 @@ if(coralScrollContainer) {
     clearTimeout(coralScrollContainer._wheelSnapTimeout);
     coralScrollContainer._wheelSnapTimeout = setTimeout(() => { snapToClosestItem(); }, 320);
   }, { passive: false });
-
-  window.__snapCoralScrollToIndex = (index) => {
-    const item = coralScrollContainer.querySelector(`.coral-scroll-item[data-index="${index}"]`);
-    if (!item) return;
-    const target = getCenterTargetForItem(item);
-    smoothScrollToVertical(target, 420);
-    setTimeout(() => {
-      if (currentCoralIndex !== index) { currentModelStateIndex = 0; }
-      currentCoralIndex = index;
-      currentCoralTypeIndex = index;
-      renderCoralItems(true);
-    }, 440);
-  };
-})();
+}
 
 // =============================================
 // 4. CORAL TYPE SECTION LOGIC
 // =============================================
 
 function updateMainCoralContent(index) {
-  if(!mainCoralTitle) return; // Guard clause if elements missing
+  if(!mainCoralTitle) return;
 
   const item = coralData[index];
   mainCoralTitle.textContent = item.name;
@@ -592,7 +557,16 @@ function updateMainCoralContent(index) {
     card.classList.remove("active");
     if (parseInt(card.dataset.index) === index) card.classList.add("active");
   });
+  
   currentCoralTypeIndex = index;
+
+  // Auto Scroll Active Card into View
+  if (coralNavHorizontal) {
+    const card = coralNavHorizontal.querySelector(`.coral-type-card[data-index="${index}"]`);
+    if (card) {
+      card.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+    }
+  }
 }
 
 function renderCoralTypeNavigation() {
@@ -605,7 +579,7 @@ function renderCoralTypeNavigation() {
     card.setAttribute("data-index", index);
     card.innerHTML = `<img src="${item.img}" alt="${item.name}" class="card-img">
                       <h4 class="card-title">${item.id}</h4>`;
-    card.addEventListener("click", (e) => {
+    card.addEventListener("click", () => {
       updateMainCoralContent(index);
     });
     coralNavHorizontal.appendChild(card);
@@ -613,8 +587,7 @@ function renderCoralTypeNavigation() {
   updateMainCoralContent(currentCoralTypeIndex);
 }
 
-// --- Logika Drag-to-Scroll & Snap (Horizontal) ---
-(function enableHorizontalScrollWithAnimation() {
+function initHorizontalScrollLogic() {
   if(!coralNavHorizontal) return;
 
   let isDown = false;
@@ -683,19 +656,27 @@ function renderCoralTypeNavigation() {
     scrollTarget = coralNavHorizontal.scrollLeft + step;
     smoothScrollTo(scrollTarget);
   }, { passive: false });
+}
 
-  function scrollActiveCardIntoView(index) {
-    const card = coralNavHorizontal.querySelector(`.coral-type-card[data-index="${index}"]`);
-    if (card)
-      card.scrollIntoView({ behavior: "smooth", inline: "center", block: "nearest" });
+function updateStateText(state) {
+  const titleEl = document.getElementById("stateTitle");
+  const descEl = document.getElementById("stateDesc");
+  const infoContainer = document.querySelector(".coral-state-info");
+
+  if (stateInfoData[state] && titleEl && descEl) {
+    infoContainer.style.opacity = 0; 
+    setTimeout(() => {
+      titleEl.textContent = stateInfoData[state].title;
+      descEl.textContent = stateInfoData[state].desc;
+      
+      if (state === "normal") titleEl.style.color = "#ffffff";
+      if (state === "bleached") titleEl.style.color = "#ffdddd";
+      if (state === "dead") titleEl.style.color = "#888888";
+
+      infoContainer.style.opacity = 1; 
+    }, 500);
   }
-
-  const oldUpdateMainCoralContent = updateMainCoralContent;
-  updateMainCoralContent = function (index) {
-    oldUpdateMainCoralContent(index);
-    scrollActiveCardIntoView(index); 
-  };
-})();
+}
 
 // =============================================
 // 5. NAVIGATION & SCROLL-SPY LOGIC
@@ -708,18 +689,14 @@ const sectionColors = {
 
 function updateSlider(activeLink) {
   if (!activeLink || !navContainer) return;
-
   requestAnimationFrame(() => {
     const containerRect = navContainer.getBoundingClientRect();
     const linkRect = activeLink.getBoundingClientRect();
-
     const relativeLeft = linkRect.left - containerRect.left;
     const width = linkRect.width;
 
     navContainer.style.setProperty("--slider-width", `${width + 10}px`);
     navContainer.style.setProperty("--slider-translate", `${relativeLeft - 5}px`);
-    
-    const slider = navContainer.querySelector('::before'); 
   });
 }
 
@@ -750,65 +727,53 @@ function setActiveLink(sectionId) {
       updateSlider(link);
       updateBackground(sectionId);
     } 
-    else if (!href.startsWith("#") && href.includes(sectionId)) {
-      link.classList.add("active");
-      updateSlider(link);
+    else if (!href.startsWith("#")) {
+      const path = window.location.pathname;
+      if (path.endsWith(href)) {
+        link.classList.add("active");
+        updateSlider(link);
+      }
     }
   });
 }
 
-const observerCallback = (entries, observer) => {
+const observerCallback = (entries) => {
   if (isScrolling) return; 
-
   entries.forEach((entry) => {
-    if (entry.isIntersecting) {
-      setActiveLink(entry.target.id);
-    }
+    if (entry.isIntersecting) setActiveLink(entry.target.id);
   });
 };
 
-const observerOptions = {
+const observer = new IntersectionObserver(observerCallback, {
   root: null,
   rootMargin: "-20% 0px -80% 0px", 
   threshold: 0,
-};
-
-const observer = new IntersectionObserver(observerCallback, observerOptions);
+});
 
 function initializePageLogic() {
   const currentPath = window.location.pathname;
-  
   const isMap = currentPath.includes("map.html");
   const is360 = currentPath.includes("360.html");
   const isStaticPage = isMap || is360;
 
   if (isStaticPage) {
-    let targetLink;
-    if (isMap) targetLink = document.querySelector('a[href="map.html"]');
-    if (is360) targetLink = document.querySelector('a[href="360.html"]');
-
-    if (targetLink) {
-        navLinks.forEach(l => l.classList.remove('active'));
-        targetLink.classList.add('active');
-        updateSlider(targetLink);
-        setTimeout(() => updateSlider(targetLink), 100);
-        setTimeout(() => updateSlider(targetLink), 500);
-        setTimeout(() => updateSlider(targetLink), 1000);
+    navLinks.forEach(l => l.classList.remove("active"));
+    if (isMap) {
+      const link = document.querySelector('a[href="map.html"]');
+      link.classList.add("active");
+      updateSlider(link);
     }
-    
-
-    setupClickListeners(); // Tetap jalankan listener klik
+    if (is360) {
+      const link = document.querySelector('a[href="360.html"]');
+      link.classList.add("active");
+      updateSlider(link);
+    }
+    setupClickListeners(); 
     return;
   }
 
-  // === LOGIKA NORMAL (Hanya untuk Halaman Home) ===
+  sections.forEach((section) => { observer.observe(section); });
   
-  // 1. Observer hanya jalan di Home
-  sections.forEach((section) => {
-    observer.observe(section);
-  });
-  
-  // 2. Default Active di Home
   const activeLink = document.querySelector(".nav-link.active");
   if (activeLink) {
       setTimeout(() => { updateSlider(activeLink); }, 100);
@@ -822,11 +787,7 @@ function setupClickListeners() {
   navLinks.forEach((link) => {
     link.addEventListener("click", (e) => {
       const href = link.getAttribute("href");
-      
-      // Jika link ke halaman lain (map/360), biarkan browser pindah halaman
-      if (!href.startsWith("#")) {
-        return; 
-      }
+      if (!href.startsWith("#")) return; 
 
       e.preventDefault();
       
@@ -841,7 +802,6 @@ function setupClickListeners() {
 
       setActiveLink(targetId);
       updateBackground(targetId);
-
       isScrolling = true; 
 
       targetSection.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -903,22 +863,12 @@ function animate() {
   requestAnimationFrame(animate);
   controls.update();
 
-  if (object && !isDragging) {
-    object.rotation.y += 0.001;
-  }
-  if (interactionPlane) {
-    interactionPlane.lookAt(camera.position);
-  }
-  if (renderer && scene && camera) {
-      renderer.render(scene, camera);
-  }
+  if (object && !isDragging) object.rotation.y += 0.001;
+  if (interactionPlane) interactionPlane.lookAt(camera.position);
+  if (renderer && scene && camera) renderer.render(scene, camera);
 
-  if (polipObject) {
-    polipObject.rotation.y += 0.005; 
-  }
-  if (polipRenderer && polipScene && polipCamera) {
-    polipRenderer.render(polipScene, polipCamera); 
-  }
+  if (polipObject) polipObject.rotation.y += 0.005; 
+  if (polipRenderer && polipScene && polipCamera) polipRenderer.render(polipScene, polipCamera); 
 }
 
 window.addEventListener("resize", function () {
@@ -950,6 +900,7 @@ function onMouseMove(event) {
     document.body.style.cursor = "default";
     return;
   }
+
   const rect = renderer.domElement.getBoundingClientRect();
   mouse.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
   mouse.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
@@ -957,12 +908,16 @@ function onMouseMove(event) {
 
   if (interactionPlane) {
     const intersects = raycaster.intersectObject(interactionPlane, false);
+    const coralInfoEl = document.querySelector('.coral-state-info'); 
+
     if (intersects.length > 0) {
       controls.enabled = true; 
       document.body.style.cursor = "grab";
+      if (coralInfoEl) coralInfoEl.classList.add('show');
     } else {
       controls.enabled = false; 
       document.body.style.cursor = "default";
+      if (coralInfoEl) coralInfoEl.classList.remove('show');
     }
   }
 }
@@ -976,6 +931,14 @@ if(btnExploreHome) {
       const coralTypeLink = document.querySelector('a[href="#coral-type"]');
       if (coralTypeLink) { coralTypeLink.click(); }
     });
+}
+
+const polipContainerEl = document.getElementById('polipContainer');
+const polipInfoEl = document.querySelector('.polip-info-overlay');
+
+if (polipContainerEl && polipInfoEl) {
+    polipContainerEl.addEventListener('mouseenter', () => polipInfoEl.classList.add('show'));
+    polipContainerEl.addEventListener('mouseleave', () => polipInfoEl.classList.remove('show'));
 }
 
 // =============================================
@@ -993,23 +956,25 @@ window.addEventListener("load", () => {
     window.scrollTo(0, 0);
     document.documentElement.scrollTop = 0;
     document.body.scrollTop = 0;
-    if (attempts > 0) {
-      requestAnimationFrame(() => forceScrollTop(attempts - 1));
-    }
+    if (attempts > 0) requestAnimationFrame(() => forceScrollTop(attempts - 1));
   }
   forceScrollTop();
 
   setTimeout(() => {
     initThree();
     initPolipScene();
-    initializePageLogic(); // Logika navigasi diperbaiki di sini
+    initializePageLogic();
     
-    // Inisialisasi konten coral hanya jika elemen container ada (di Home)
+    // Init Scroll Logics
+    initVerticalScrollLogic();
+    initHorizontalScrollLogic();
+    
     if(coralScrollContainer) {
         currentCoralIndex = 0;
         renderCoralItems(true);
         currentCoralTypeIndex = currentCoralIndex;
         updateMainCoralContent(currentCoralTypeIndex); 
+        updateStateText("normal");
     }
 
     setTimeout(() => {
