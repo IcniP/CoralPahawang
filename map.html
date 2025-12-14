@@ -6,7 +6,6 @@
     <title>Peta Wisata Pulau Pahawang</title>
     
     <link rel="stylesheet" href="Website/css/style.css" />
-    
     <link rel="stylesheet" href="map/style.css">
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,17 +13,16 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&display=swap" rel="stylesheet">
     
     <style>
-        /* Memberi jarak atas agar tidak tertutup navbar fixed */
         body {
             padding-top: 80px; 
-            background-color: #f4f4f4; /* Warna background netral */
+            background-color: #f4f4f4; 
         }
-        /* Memastikan footer tidak berantakan di halaman map */
         .main-footer {
             margin-top: 50px;
         }
     </style>
 </head>
+<script type="module" src="Website/js/main.js"></script>
 <body>
 
     <nav class="fixed-navigation-bar"> 
@@ -58,22 +56,23 @@
             </div>
             <div class="peta-div-right">
                 <div class="map-wrapper">
-                    <img src="map/map/map.jpg" alt="Peta Wisata" class="main-map">
+                    <img src="map/map/map.webp" alt="Peta Wisata" class="main-map">
                     
-                    <img src="map/header.png" class="map-indicator" id="pos-header">
-                    
+                    <div id="map-selector"></div>
+                
+                    <img src="map/header.webp" class="map-indicator" id="pos-header">
                     <img src="" class="info-popup" id="info-popup" style="display: none;">
+                    
+                    <img src="map/map/mangrovetracking.webp" class="map-indicator clickable" id="pos-mangrove" data-img="map/maptext/mangrove.webp">     
+                    <img src="map/map/pahawangteea.webp" class="map-indicator clickable" id="pos-teea" data-img="map/maptext/teea.webp">
+                    <img src="map/map/Pasirtimbul.webp" class="map-indicator clickable" id="pos-pasir" data-img="map/maptext/pasir.webp">
+                    <img src="map/map/spotbungsu.webp" class="map-indicator clickable" id="pos-bungsu" data-img="map/maptext/bungsu.webp">
+                    <img src="map/map/spotgemilang.webp" class="map-indicator clickable" id="pos-gemilang" data-img="map/maptext/gemilang.webp">
+                    <img src="map/map/spotnemokembar.webp" class="map-indicator clickable" id="pos-nemo" data-img="map/maptext/nemo.webp">
+                    <img src="map/map/transplantasiterumbukarang.webp" class="map-indicator clickable" id="pos-terumbu" data-img="map/maptext/terumbu.webp">
+                    <img src="map/map/watersport.webp" class="map-indicator clickable" id="pos-watersport" data-img="map/maptext/watersport.webp">
                 
-                    <img src="map/map/mangrovetracking.png" class="map-indicator clickable" id="pos-mangrove" data-img="map/maptext/mangrove.jpg">     
-                    <img src="map/map/pahawangteea.png" class="map-indicator clickable" id="pos-teea" data-img="map/maptext/teea.jpg">
-                    <img src="map/map/Pasirtimbul.png" class="map-indicator clickable" id="pos-pasir" data-img="map/maptext/pasir.jpg">
-                    <img src="map/map/spotbungsu.png" class="map-indicator clickable" id="pos-bungsu" data-img="map/maptext/bungsu.jpg">
-                    <img src="map/map/spotgemilang.png" class="map-indicator clickable" id="pos-gemilang" data-img="map/maptext/gemilang.jpg">
-                    <img src="map/map/spotnemokembar.png" class="map-indicator clickable" id="pos-nemo" data-img="map/maptext/nemo.jpg">
-                    <img src="map/map/transplantasiterumbukarang.png" class="map-indicator clickable" id="pos-terumbu" data-img="map/maptext/terumbu.jpg">
-                    <img src="map/map/watersport.png" class="map-indicator clickable" id="pos-watersport" data-img="map/maptext/watersport.jpg">
-                
-                    <img src="map/map/kamudisini.png" class="map-indicator" id="pos-pin" data-img="map/maptext/kamudisini.jpg">
+                    <img src="map/map/kamudisini.webp" class="map-indicator clickable" id="pos-pin" data-img="map/maptext/kamudisini.webp">
                 </div>
             </div>
         </div>
@@ -82,7 +81,7 @@
             <h1>PULAU PAHAWANG</h1>
             <p>Pulau Pahawang berlokasi di Kabupaten Pesawaran, Lampung. Pulau ini dikenal dengan air lautnya yang jernih, pasir putih, serta keindahan bawah laut yang menjadi daya tarik utama bagi wisatawan. Kegiatan seperti snorkeling, diving, dan island hopping menjadi aktivitas favorit di pulau ini. Selain itu, suasana desa pesisir dan keramahan penduduk lokal membuat pengalaman wisata semakin menyenangkan.</p>
             <div class="img-placeholder tall-placeholder">
-                <img src="map/pulau-img.png">
+                <img src="map/pulau-img.webp">
             </div>
         </div>
 
@@ -94,21 +93,21 @@
                     <p>Berikut beberapa tips sederhana yang bisa kamu ikuti:</p>
                 </div>
                 <div class="img-placeholder medium-placeholder">
-                    <img src="map/tips-img.png">
+                    <img src="map/tips-img.webp">
                 </div>
             </div>
             <div class="tips-div-bottom">
                 <div class="tip-item">
-                    <img src="map/tips-card-1.png">
+                    <img src="map/tips-card-1.webp">
                 </div>
                 <div class="tip-item">
-                    <img src="map/tips-card-2.png">
+                    <img src="map/tips-card-2.webp">
                 </div>
                 <div class="tip-item">
-                    <img src="map/tips-card-3.png">
+                    <img src="map/tips-card-3.webp">
                 </div>
                 <div class="tip-item">
-                    <img src="map/tips-card-4.png">
+                    <img src="map/tips-card-4.webp">
                 </div>
             </div>
         </div>
@@ -116,21 +115,21 @@
         <div class="saat-div">
             <div class="saat-div-left">
                 <h1>SAAT DI PAHAWANG KAMU HARUS:</h1>
-                <img src="map/saat-img.png">
+                <img src="map/saat-img.webp">
             </div>
             <div class="saat-div-right">
                 <div class="saat-grid">
                     <div class="saat-item" id="item-bersih">
-                        <img src="map/saat-bar-1.png">
+                        <img src="map/saat-bar-1.webp">
                     </div>
                     <div class="saat-item" id="item-warga">
-                        <img src="map/saat-bar-2.png">
+                        <img src="map/saat-bar-2.webp">
                     </div>
                     <div class="saat-item" id="item-alam">
-                        <img src="map/saat-bar-3.png">
+                        <img src="map/saat-bar-3.webp">
                     </div>
                     <div class="saat-item" id="item-aman">
-                        <img src="map/saat-bar-4.png">
+                        <img src="map/saat-bar-4.webp">
                     </div>
                 </div> 
             </div> 
@@ -141,20 +140,20 @@
                 <div class="waktu-header-flex">
                     <h2>WAKTU TERBAIK BERWISATA KE PAHAWANG</h2>
                     <div class="img-placeholder">
-                        <img src="map/waktu-img.png">
+                        <img src="map/waktu-img.webp">
                     </div>
                 </div>
                 <div class="waktu-alasan-grid">
                     <div class="waktu-alasan-item">
-                        <div class="img-placeholder small-placeholder"><img src="map/waktu-card-1.png"></div>
+                        <div class="img-placeholder small-placeholder"><img src="map/waktu-card-1.webp"></div>
                         <p>Kondisi air laut lebih tenang</p>
                     </div>
                     <div class="waktu-alasan-item">
-                        <div class="img-placeholder small-placeholder"><img src="map/waktu-card-2.png"></div>
+                        <div class="img-placeholder small-placeholder"><img src="map/waktu-card-2.webp"></div>
                         <p>Ombak cenderung kecil</p>
                     </div>
                     <div class="waktu-alasan-item">
-                        <div class="img-placeholder small-placeholder"><img src="map/waktu-card-3.png"></div>
+                        <div class="img-placeholder small-placeholder"><img src="map/waktu-card-3.webp"></div>
                         <p>Air laut jernih dan visibilitas bawah laut bagus</p>
                     </div>
                 </div>
@@ -163,7 +162,7 @@
             <div class="waktu-div-right">
                 <div class="estimasi-header">
                     <h2>Estimasi jarak dan waktu perjalanan:</h2>
-                    <div class="img-placeholder icon-placeholder"><img src="map/estimasi-img.png"></div>
+                    <div class="img-placeholder icon-placeholder"><img src="map/estimasi-img.webp"></div>
                 </div>
                 <div class="estimasi-wrapper">
                     <div class="estimasi-item-content">
@@ -215,30 +214,43 @@
 
     <script>
         document.addEventListener("DOMContentLoaded", function() {
-            // Script untuk Pin dan Popup Peta
-            const pin = document.getElementById('pos-pin');
+            const selector = document.getElementById('map-selector'); 
             const popup = document.getElementById('info-popup');
             const destinations = document.querySelectorAll('.clickable');
-    
+            const startPin = document.getElementById('pos-pin'); 
+
+            function moveSelector(targetElement) {
+                const targetLeft = targetElement.offsetLeft;
+                const targetTop = targetElement.offsetTop;
+                const targetWidth = targetElement.offsetWidth;
+                const targetHeight = targetElement.offsetHeight;
+
+                selector.style.display = 'block';
+                selector.style.left = (targetLeft + (targetWidth / 2)) + 'px';
+                selector.style.top = (targetTop + (targetHeight / 2)) + 'px';
+            }
+
+            function showInfo(element) {
+                const imgSource = element.getAttribute('data-img'); 
+                if(imgSource) {
+                    popup.src = imgSource;
+                    popup.style.display = 'block'; 
+                }
+            }
+
             destinations.forEach(item => {
                 item.addEventListener('click', function() {
-                    const targetLeft = this.offsetLeft;
-                    const targetTop = this.offsetTop;
-                    const targetWidth = this.offsetWidth;
-                    const targetHeight = this.offsetHeight;
-    
-                    pin.style.bottom = 'auto';
-                    pin.style.right = 'auto';
-                    pin.style.left = (targetLeft + (targetWidth / 2) - (pin.offsetWidth / 2)) + 'px';
-                    pin.style.top = (targetTop - pin.offsetHeight + 50) + 'px'; 
-    
-                    const imgSource = this.getAttribute('data-img'); 
-                    if(imgSource) {
-                        popup.src = imgSource;
-                        popup.style.display = 'block'; 
-                    }
+                    moveSelector(this);
+                    showInfo(this);
                 });
             });
+
+            if (startPin) {
+                showInfo(startPin);
+                setTimeout(() => {
+                    moveSelector(startPin);
+                }, 100);
+            }
         });
     </script>
 </body>
